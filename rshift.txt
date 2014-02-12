@@ -1,0 +1,123 @@
+
+        //the two input words can be tweaked here
+        movi 2, 0xF739 // the input word
+
+        // r6 rshift(r2)
+
+        movi 7, 6
+        jalr 7, 7
+end:    halt
+
+
+        // this function puts the rshift of r2 in r6, the carry bit is not handled
+        // the return address must be in r7
+        // r5 and r6 are modified during the process (they must be saved and restored upon each call if needed)
+
+        // NB : A and B <=> (A nand B) nand (A nand B)
+
+rshift: movi 5, 0x0002      
+        nand 5, 2, 5    // | get bit at pos 1
+        nand 5, 5, 5    // | ----------------
+        beq, 5, 0, 2    // | if 0 skip
+        movi 5, 0x0001  // | else \
+        add  6, 6, 5    // |       --> add bit shifted to r6
+
+        movi 5, 0x0004      
+        nand 5, 2, 5    // | get bit at pos 2
+        nand 5, 5, 5    // | ----------------
+        beq, 5, 0, 2    // | if 0 skip
+        movi 5, 0x0002  // | else \
+        add  6, 6, 5    // |       --> add bit shifted to r6
+
+        movi 5, 0x0008      
+        nand 5, 2, 5    // | get bit at pos 3
+        nand 5, 5, 5    // | ----------------
+        beq, 5, 0, 2    // | if 0 skip
+        movi 5, 0x0004  // | else \
+        add  6, 6, 5    // |       --> add bit shifted to r6
+
+        movi 5, 0x0010      
+        nand 5, 2, 5    // | get bit at pos 4
+        nand 5, 5, 5    // | ----------------
+        beq, 5, 0, 2    // | if 0 skip
+        movi 5, 0x0008  // | else \
+        add  6, 6, 5    // |       --> add bit shifted to r6
+
+        movi 5, 0x0020      
+        nand 5, 2, 5    // | get bit at pos 5
+        nand 5, 5, 5    // | ----------------
+        beq, 5, 0, 2    // | if 0 skip
+        movi 5, 0x0010  // | else \
+        add  6, 6, 5    // |       --> add bit shifted to r6
+
+        movi 5, 0x0040      
+        nand 5, 2, 5    // | get bit at pos 6
+        nand 5, 5, 5    // | ----------------
+        beq, 5, 0, 2    // | if 0 skip
+        movi 5, 0x0020  // | else \
+        add  6, 6, 5    // |       --> add bit shifted to r6
+
+        movi 5, 0x0080      
+        nand 5, 2, 5    // | get bit at pos 7
+        nand 5, 5, 5    // | ----------------
+        beq, 5, 0, 2    // | if 0 skip
+        movi 5, 0x0040  // | else \
+        add  6, 6, 5    // |       --> add bit shifted to r6
+
+        movi 5, 0x0100      
+        nand 5, 2, 5    // | get bit at pos 8
+        nand 5, 5, 5    // | ----------------
+        beq, 5, 0, 2    // | if 0 skip
+        movi 5, 0x0080  // | else \
+        add  6, 6, 5    // |       --> add bit shifted to r6
+
+        movi 5, 0x0200      
+        nand 5, 2, 5    // | get bit at pos 9
+        nand 5, 5, 5    // | ----------------
+        beq, 5, 0, 2    // | if 0 skip
+        movi 5, 0x0100  // | else \
+        add  6, 6, 5    // |       --> add bit shifted to r6
+
+        movi 5, 0x0400      
+        nand 5, 2, 5    // | get bit at pos 10
+        nand 5, 5, 5    // | ----------------
+        beq, 5, 0, 2    // | if 0 skip
+        movi 5, 0x0200  // | else \
+        add  6, 6, 5    // |       --> add bit shifted to r6
+
+        movi 5, 0x0800      
+        nand 5, 2, 5    // | get bit at pos 11
+        nand 5, 5, 5    // | ----------------
+        beq, 5, 0, 2    // | if 0 skip
+        movi 5, 0x0400  // | else \
+        add  6, 6, 5    // |       --> add bit shifted to r6
+
+        movi 5, 0x1000      
+        nand 5, 2, 5    // | get bit at pos 12
+        nand 5, 5, 5    // | ----------------
+        beq, 5, 0, 2    // | if 0 skip
+        movi 5, 0x0800  // | else \
+        add  6, 6, 5    // |       --> add bit shifted to r6
+
+        movi 5, 0x2000      
+        nand 5, 2, 5    // | get bit at pos 13
+        nand 5, 5, 5    // | ----------------
+        beq, 5, 0, 2    // | if 0 skip
+        movi 5, 0x1000  // | else \
+        add  6, 6, 5    // |       --> add bit shifted to r6
+
+        movi 5, 0x4000      
+        nand 5, 2, 5    // | get bit at pos 14
+        nand 5, 5, 5    // | ----------------
+        beq, 5, 0, 2    // | if 0 skip
+        movi 5, 0x2000  // | else \
+        add  6, 6, 5    // |       --> add bit shifted to r6
+
+        movi 5, 0x8000      
+        nand 5, 2, 5    // | get bit at pos 15
+        nand 5, 5, 5    // | ----------------
+        beq, 5, 0, 2    // | if 0 skip
+        movi 5, 0x4000  // | else \
+        add  6, 6, 5    // |       --> add bit shifted to r6
+
+        jalr 0, 7

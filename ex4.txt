@@ -1,0 +1,44 @@
+
+
+        //the two input words can be tweaked here
+        movi 1, 0xffff // the first input word
+        movi 2, 0x0001 // the second input word
+
+        // r3 <-- r1 + r2
+        add  3, 1, 2
+
+        // store 0b100... in r7, will be used as a MSB mask later
+        movi 7, 0x8000
+
+        // NB : A and B <=> (A nand B) nand (A nand B)
+
+        // store the most significant bit of r1 in r5
+        nand 5, 1, 7
+        nand 5, 5, 5
+
+        // store the most significant bit of r2 in r6
+        nand 6, 2, 7
+        nand 6, 6, 6
+
+        // 4 different cases :
+        //   - r5 == r6 :
+        //     - ....... == 0 => there is no overflow for sure
+        //     - else         => overflow
+        //   - else     :
+        //     - MSB(r3) == 0 => overflow
+        //     - else         => no overflow
+
+
+        beq  5, 6, eq
+
+neq:    nand 4, 3, 7 // |store the most significant bit of r3 in r4
+        nand 4, 4, 4 // |
+        beq  4, 0, nzero
+none:   movi 4, 0
+        halt
+nzero:  movi 4, 1
+        halt
+
+eq:     beq  5, 0, ezero
+eone:   addi 4, 0, 1
+ezero:  halt
