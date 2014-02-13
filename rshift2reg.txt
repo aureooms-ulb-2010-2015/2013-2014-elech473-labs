@@ -1,92 +1,17 @@
 
-        // NB : A and B <=> (A nand B) nand (A nand B)
-        // lshift(A) <=> A <-- 2 * A <=> A <-- A + A <=> add A, A, A
-        // r7 is always used as a function return address
-        // r6 is always used as the stack pointer
+        //the input word can be tweaked here
+        movi 2, 0xF739 // the input word
 
+        // r2 <-- rshift(r2)
 
-        //the two input words can be tweaked here
-        movi 1, 0x1001 // the first input word
-        movi 2, 64 // the second input word
-
-        // init the stack pointer
-        movi 6, 0x0000
-
-        // r3 LSB, r4 MSB
-        movi 3, 0x0000
-        movi 4, 0x0000
-
-        movi 7, 14 // REC ADDRESS
+        movi 7, 6
         jalr 7, 7
-        halt
+end:    halt
 
-// REC
-        // recursively multiplies r1 by r2 and puts MSB in r4 and LSB in r3
-rec:    beq  2, 0, return
-        sw   7, 6, 0 // | SAVE CONTEXT
-        sw   1, 6, 1 // | ..
-        addi 6, 6, 2 // |
-        movi 5, 0x0001 // ----
-        nand 5, 2, 5   // check if multiplier is odd
-        nand 5, 5, 5   // or even
-        beq 5, 0, even // ----
-odd:    movi 7, 58 // RSHIFT ADDRESS
-        jalr 7, 7
-        movi 7, 14 // REC ADDRESS
-        jalr 7, 7
-        movi 7, 49 // DOUBLE ADDRESS
-        jalr 7, 7
-        movi 7, 229 // INC ADDRESS
-        jalr 7, 7
-        beq  0, 0, restor
-even:   movi 7, 58 // RSHIFT ADDRESS
-        jalr 7, 7
-        movi 7, 14 // REC ADDRESS
-        jalr 7, 7
-        movi 7, 49 // DOUBLE ADDRESS
-        jalr 7, 7
-restor: addi 6, 6, -2 //|
-        lw   7, 6, 0 // | RESTORE CONTEXT
-        lw   1, 6, 1 // | ..
-return: jalr 0, 7
-
-
-// DOUBLE
-
-        // this function doubles the value in r4-r3 handling the carry bit of r3
-        // the return address must be in r7
-        // r3, r4 and r5 are modified during the process (they must be saved and restored upon each call if needed)
-
-        // NB : A and B <=> (A nand B) nand (A nand B)
-
-        // store 0b100... in r5, will be used as a MSb mask
-
-double: movi 5, 0x8000
-        // store the most significant bit of r3 in r5
-        nand 5, 3, 5
-        nand 5, 5, 5
-
-        // r3 <-- r3 + r3
-        add  3, 3, 3
-        // r4 <-- r4 + r4
-        add  4, 4, 4
-
-        // 2 different cases :-
-        //   - r5 == 0 => there is no overflow for sure
-        //   - else         => overflow
-
-        beq  5, 0, zero
-one:    addi 4, 4, 1
-zero:   jalr 0, 7 // return address is r7
-
-
-
-
-// RSHIFT
 
         // this function puts the rshift of r2 in r2, the carry bit is not handled
         // the return address must be in r7
-        // r5 is modified during the process (they must be saved and restored upon each call if needed)
+        // r5 is modified during the process (it must be saved and restored upon each call if needed)
 
         // NB : A and B <=> (A nand B) nand (A nand B)
 
@@ -247,57 +172,3 @@ rshift: movi 5, 0x0001
         add  2, 2, 5    // |       --> add bit shifted to r2
 
         jalr 0, 7
-
-// INC
-        // this function adds r1 to r3 and adds the carry bit to r4
-        // the return address must be in r7
-        // r3, r4 and r5 are modified during the process (they must be saved and restored upon each call if needed)
-
-        // NB : A and B <=> (A nand B) nand (A nand B)
-
-        // store 0b100... in r5, will be used as a MSb mask
-inc:    movi 5, 0x8000
-
-        // 6 different cases :
-        //   - r5 == 0 :
-        //     - r5b == 0 => no overflow K1
-        //     - else:
-        //           - MSB(r3) == 0 => overflow K2
-        //           - else         => no overflow K3
-        //   - else    :
-        //     - r5b == 1 => overflow K4
-        //     - else:
-        //           - MSB(r3) == 0 => overflow K5
-        //           - else         => no overflow K6
-
-        // store the most significant bit of r1 in r5
-        nand 5, 1, 5
-        nand 5, 5, 5
-
-        beq 5, 0, fzero
-        // r5 == 1
-        // store the most significant bit of r3 in r5
-        movi 5, 0x8000
-        nand 5, 3, 5
-        nand 5, 5, 5
-
-        add 3, 1, 3 // make the actual addition for later
-        beq 5, 0, checkr // (K5 or K6)
-        // r5b == 1 => overflow (K4)
-overfl: addi 4, 4, 1
-        jalr 0, 7 // return address is r7
-
-        // r5 == 1
-        // store the most significant bit of r3 in r5
-fzero:  movi 5, 0x8000
-        nand 5, 3, 5
-        nand 5, 5, 5
-
-        add 3, 1, 3 // make the actual addition for later
-        beq 5, 0, incend // (K1)
-
-checkr: movi 5, 0x8000 // |
-        nand 5, 3, 5   // |store the most significant bit of r3 in r5
-        nand 5, 5, 5   // |
-        beq  5, 0, overfl
-incend: jalr 0, 7 // return address is r7

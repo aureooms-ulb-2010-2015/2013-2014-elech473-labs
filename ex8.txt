@@ -14,7 +14,7 @@ loop:   beq  2, 0, end
 end:    halt
 
 
-        // this function adds r1 to r3 and add the carry bit to r4
+        // this function adds r1 to r3 and adds the carry bit to r4
         // the return address must be in r7
         // r3, r4, r5 and r6 are modified during the process (they must be saved and restored upon each call if needed)
 
