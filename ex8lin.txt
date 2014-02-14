@@ -1,0 +1,97 @@
+
+//  var mul = function(r1, r7){
+//      var r4r3 = 0;
+//      var r2r1 = r1;
+// 
+//      for(var i = 0; i < 16; ++i){
+//          if(r7[i] == 1) r4r3 += r2r1;
+//          r2r1 *= 2;
+//      }
+//  };
+
+// INPUT
+
+        movi 1, 0x1001
+        movi 2, 0x0300
+
+// THIS IS JUST FOR READABILITY PURPOSES, AS r1 will be expanded to r2r1
+
+        add  7, 0, 2
+        add  2, 0, 0
+
+// OUTPUT
+
+        add  3, 0, 0
+        add  4, 0, 0
+
+
+        addi 5, 0, 0x0001 // | > mask init 
+
+loop:   beq  5, 0, end    // | > hit end when all the masks have been applied
+
+        nand 6, 7, 5      // | 
+        nand 6, 6, 6      // | > check whether the ith bit of r7 is up 
+        beq  6, 0, skip   // | \ else skip
+
+        add  4, 4, 2      // | > r4 can be incremented without worrying about carry bits
+        
+inc:    movi 6, 0x8000    // | > the mask for overflow checking
+
+        // 6 different cases :
+        //   - r6 == 0 :
+        //     - r6b == 0 => no overflow K1
+        //     - else:
+        //           - MSB(r3) == 0 => overflow K2
+        //           - else         => no overflow K3
+        //   - else    :
+        //     - r6b == 1 => overflow K4
+        //     - else:
+        //           - MSB(r3) == 0 => overflow K5
+        //           - else         => no overflow K6
+
+        // store the most significant bit of r1 in r6
+        nand 6, 1, 6
+        nand 6, 6, 6
+
+        beq 6, 0, fzero
+        // r6 == 1
+        // store the most significant bit of r3 in r6
+        movi 6, 0x8000
+        nand 6, 3, 6
+        nand 6, 6, 6
+
+        add 3, 1, 3 // make the actual addition for later
+        beq 6, 0, checkr // (K5 or K6)
+        // r6b == 1 => overflow (K4)
+overfl: addi 4, 4, 1
+        beq 0, 0, skip
+
+        // r6 == 1
+        // store the most significant bit of r3 in r6
+fzero:  movi 6, 0x8000
+        nand 6, 3, 6
+        nand 6, 6, 6
+
+        add 3, 1, 3 // make the actual addition for later
+        beq 6, 0, skip // (K1)
+
+checkr: movi 6, 0x8000 // |
+        nand 6, 3, 6   // | > store the most significant bit of r3 in r6
+        nand 6, 6, 6   // | \ pay attention that here r3 as already been incremented
+        beq  6, 0, overfl
+
+
+skip:   add  2, 2, 2    // |
+        movi 6, 0x8000  // |
+        nand 6, 6, 1    // |
+        nand 6, 6, 6    // |
+        beq  6, 0, 1    // | > r2r1 *= 2;
+        addi 2, 2, 1    // |
+        add  1, 1, 1    // |
+
+        add  5, 5, 5    // | > lshift the mask
+
+        beq  0, 0, loop
+
+end:    halt
+

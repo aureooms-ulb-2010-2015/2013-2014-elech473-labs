@@ -5,9 +5,22 @@
         // r6 is always used as the stack pointer
 
 
+        // var multiply(a, b){
+        //         if(b == 0) return
+        //         else{
+        //                 if (b[0] == 0){
+        //                         return multiply(a, b >> 1) << 1;
+        //                 }
+        //                 else{
+        //                         return multiply(a, b >> 1) << 1 + a;
+        //                 }
+        //         }
+        // }
+
+
         //the two input words can be tweaked here
         movi 1, 0x1001 // the first input word
-        movi 2, 64 // the second input word
+        movi 2, 0x0300 // the second input word
 
         // init the stack pointer
         movi 6, 0x0000
