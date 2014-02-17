@@ -1,9 +1,11 @@
 
+
         // NB : A and B <=> (A nand B) nand (A nand B)
         // lshift(A) <=> A <-- 2 * A <=> A <-- A + A <=> add A, A, A
         // r7 is always used as a function return address
         // r6 is always used as the stack pointer
-
+        
+// ALGORITHM
 
         // var multiply(a, b){
         //         if(b == 0) return
@@ -19,8 +21,8 @@
 
 
         //the two input words can be tweaked here
-        movi 1, 0x1001 // the first input word
-        movi 2, 0x0300 // the second input word
+        movi 1, 0xffff // the first input word
+        movi 2, 0xffff // the second input word
 
         // init the stack pointer
         movi 6, 0x0000

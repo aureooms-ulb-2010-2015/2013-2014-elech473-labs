@@ -1,18 +1,19 @@
+// ALGORITHM
 
-//  var mul = function(r1, r7){
-//      var r4r3 = 0;
-//      var r2r1 = r1;
-// 
-//      for(var i = 0; i < 16; ++i){
-//          if(r7[i] == 1) r4r3 += r2r1;
-//          r2r1 *= 2;
-//      }
-//  };
+        //  var mul = function(r1, r7){
+        //      var r4r3 = 0;
+        //      var r2r1 = r1;
+        // 
+        //      for(var i = 0; i < 16; ++i){
+        //          if(r7[i] == 1) r4r3 += r2r1;
+        //          r2r1 *= 2;
+        //      }
+        //  };
 
 // INPUT
 
-        movi 1, 0x1001
-        movi 2, 0x0300
+        movi 1, 0xffff
+        movi 2, 0xffff
 
 // THIS IS JUST FOR READABILITY PURPOSES, AS r1 will be expanded to r2r1
 
@@ -66,7 +67,7 @@ inc:    movi 6, 0x8000    // | > the mask for overflow checking
 overfl: addi 4, 4, 1
         beq 0, 0, skip
 
-        // r6 == 1
+        // r6 == 0
         // store the most significant bit of r3 in r6
 fzero:  movi 6, 0x8000
         nand 6, 3, 6
