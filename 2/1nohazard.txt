@@ -1,0 +1,26 @@
+// INPUT
+
+        addi 7, 0, 10   // | > NO NEED for `movi` since F_{24} is the last to fit on 16 bits
+
+
+// INIT
+
+        addi 2, 0, 1    // | > F_{i+1} is stored here
+        add  6, 0, 0    // | > F_{i+1} will be saved here
+        add  1, 0, 0    // | > F_{i} is stored here
+
+
+// MAIN
+
+loop:   beq  7, 0, end  // | > LOOP CONDITION
+        addi 7, 7, -1   // | > LOOP STEP
+
+        sw   2, 6, 0    // | > save F_{i+1}
+        add  2, 2, 1    // | > compute F_{i+2}
+
+        lw   1, 6, 0    // | > load F_{i+1}
+        addi 6, 6, 1    // | > addr increment
+
+        beq  0, 0, loop // | > LOOP JUMP
+
+end:    halt            // | > END
