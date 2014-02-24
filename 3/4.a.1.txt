@@ -1,0 +1,14 @@
+
+		movi 1, 0x0342
+		movi 2, 0x1288
+
+		nand 2, 2, 2
+		addi 2, 2, 1
+		add  4, 1, 2
+		movi 5, 0x8000
+		nand 5, 4, 5
+		nand 5, 5, 5
+		beq  5, 0, end
+		addi 3, 0, 1
+		
+end:	halt
