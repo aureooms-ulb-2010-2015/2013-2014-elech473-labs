@@ -4,7 +4,8 @@
 		movi 1, 0x0342
 		movi 2, 0x1288
 
-		bl 1, 2, end
-		addi 3, 0, 1
+		bl 1, 2, islo
+		halt
 		
-end:	halt
+islo:	addi 3, 0, 1
+		halt
