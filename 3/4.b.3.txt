@@ -1,7 +1,15 @@
 
+
+// CONFIG 
+        // BASE -> IS[2]
+
+// INPUT
 		movi 1, 0x0342
 		movi 2, 0x1288
-		mul  5, 1, 2
-		add  3, 0, 5
+
+// r4r3 <- (r1 * r2)
+
+		mul  5, 1, 2  // | MSB in r4
+		add  3, 0, 5  // | LSB in r3
 
 end:	halt

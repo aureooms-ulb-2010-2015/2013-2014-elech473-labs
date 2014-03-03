@@ -1,11 +1,14 @@
 
 
-
+// INPUT
 		movi 1, 0x0342
 		movi 2, 0x1288
 
-		bl 1, 2, islo
-		halt
+
+// r3 <- (r1 < r2)
+
+		bl 1, 2, islo  // | simply use bl
+		halt           // | r1 >= r2
 		
 islo:	addi 3, 0, 1
-		halt
+		halt           // | r1 < r2

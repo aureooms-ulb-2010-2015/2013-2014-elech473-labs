@@ -1,14 +1,19 @@
 
-		movi 1, 0x0342
-		movi 2, 0x1288
 
-		nand 2, 2, 2
-		addi 2, 2, 1
-		add  4, 1, 2
-		movi 5, 0x8000
-		nand 5, 4, 5
-		nand 5, 5, 5
-		beq  5, 0, end
-		addi 3, 0, 1
+// INPUT
+		movi 1, 0xfff3
+		movi 2, 0xfff4
+
+
+// r3 <- (r1 < r2)
+
+		nand 2, 2, 2   // |
+		addi 2, 2, 1   // | > r1 - r2 (using 2's complement of 2)
+		add  4, 1, 2   // | 
+		movi 5, 0x8000 // |
+		nand 5, 4, 5   // | > if the result is negative --> r1 < r2
+		nand 5, 5, 5   // | \ note that this is true even if (r1 - r2) produces an overflow
+		beq  5, 0, end // | if result positive : JUMP TO END
+		addi 3, 0, 1   // | \ else r3 <- 1
 		
 end:	halt
