@@ -49,7 +49,7 @@ overfl: addi 4, 4, 1
 skip:   add  2, 2, 2    // | --
         addi 6, 0, -15  // | (shift constant to get the MSb)
         shl  6, 1, 6    // | > r2r1 *= 2
-        add  2, 2, 6    // | (HERE I DIDN'T USE OVERFLOW HANDLING SINCE IT WOULD INTRODUCE BRANCHING WHILE THE ACTUAL SOLUTION IS SIMPLE AND STRAIGHTFORWARD AND ILLUSTRATES THE USE OF SHL TO AVOID BRANCHING)
+        add  2, 2, 6    // |
         add  1, 1, 1    // | --
 
         add  5, 5, 5    // | > lshift the mask
