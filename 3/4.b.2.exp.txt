@@ -12,8 +12,8 @@
         //  };
 
         //the two input words can be tweaked here
-        movi 1, 0x1001 // the first input word
-        movi 2, 0x0300 // the second input word
+        movi 1, 0x7fff // the first input word
+        movi 2, 0x0007 // the second input word
 
         // r3 LSB, r4 MSB
 
