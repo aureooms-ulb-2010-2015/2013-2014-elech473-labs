@@ -1,3 +1,10 @@
+
+
+// CONFIG 
+        // BASE -> IS[1]
+        // ADDITIONAL INSTRUCTIONS -> and, shl
+        // OVERFLOW HANDLING -> unsigned integer
+
 // ALGORITHM
 
         //  var mul = function(r1, r7){
@@ -26,61 +33,23 @@
         add  4, 0, 0
 
 
-        addi 5, 0, 0x0001 // | > mask init 
+        addi 5, 0, 0x0001       // | > mask init 
 
-loop:   beq  5, 0, end    // | > hit end when all the masks have been applied
+loop:   beq  5, 0, end          // | > hit end when all the masks have been applied
 
-        and  6, 7, 5      // | > check whether the ith bit of r7 is up 
-        beq  6, 0, skip   // | \ else skip
+        and  6, 7, 5            // | > check whether the ith bit of r7 is up 
+        beq  6, 0, skip         // | \ else skip
 
-        add  4, 4, 2      // | > r4 can be incremented without worrying about carry bits
-        
-inc:    movi 6, 0x8000    // | > the mask for overflow checking
+        add  4, 4, 2            // | > r4 can be incremented without worrying about carry bits
+        add  3, 3, 1, overfl    // | > JUMP TO overfl IN CASE OF OVERFLOW
+        beq  0, 0, skip         // | \ else skip
 
-        // 6 different cases :
-        //   - r6 == 0 :
-        //     - r6b == 0 => no overflow K1
-        //     - else:
-        //           - MSB(r3) == 0 => overflow K2
-        //           - else         => no overflow K3
-        //   - else    :
-        //     - r6b == 1 => overflow K4
-        //     - else:
-        //           - MSB(r3) == 0 => overflow K5
-        //           - else         => no overflow K6
-
-        // store the most significant bit of r1 in r6
-        and 6, 1, 6
-
-        beq 6, 0, fzero
-        // r6 == 1
-        // store the most significant bit of r3 in r6
-        movi 6, 0x8000
-        and 6, 3, 6
-
-        add 3, 1, 3 // make the actual addition for later
-        beq 6, 0, checkr // (K5 or K6)
-        // r6b == 1 => overflow (K4)
 overfl: addi 4, 4, 1
-        beq 0, 0, skip
-
-        // r6 == 0
-        // store the most significant bit of r3 in r6
-fzero:  movi 6, 0x8000
-        and 6, 3, 6
-
-        add 3, 1, 3 // make the actual addition for later
-        beq 6, 0, skip // (K1)
-
-checkr: movi 6, 0x8000 // | > store the most significant bit of r3 in r6
-        and  6, 3, 6   // | \ pay attention that here r3 as already been incremented
-        beq  6, 0, overfl
-
 
 skip:   add  2, 2, 2    // | --
         addi 6, 0, -15  // | (shift constant to get the MSb)
-        shl  6, 1, 6    // | > r2r1 *= 2;
-        add  2, 2, 6    // |
+        shl  6, 1, 6    // | > r2r1 *= 2
+        add  2, 2, 6    // | (HERE I DIDN'T USE OVERFLOW HANDLING SINCE IT WOULD INTRODUCE BRANCHING WHILE THE ACTUAL SOLUTION IS SIMPLE AND STRAIGHTFORWARD AND ILLUSTRATES THE USE OF SHL TO AVOID BRANCHING)
         add  1, 1, 1    // | --
 
         add  5, 5, 5    // | > lshift the mask
