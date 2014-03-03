@@ -46,7 +46,7 @@ rec:    beq  2, 0, return
         sw   7, 6, 0 // | SAVE CONTEXT
         addi 6, 6, 1 // |
         movi 5, 0x0001  // ----
-        and  5, 2, 5    // check if multiplier is odd or even
+        and  5, 2, 5    // check if multiplier is odd or even (the and op allows to drop nand(nand(A, B)))
         beq  5, 0, even // ----
 odd:    movi 7, 52 // RSHIFT ADDRESS
         jalr 7, 7
@@ -72,9 +72,8 @@ return: jalr 7, 7
 
         // this function doubles the value in r4-r3 handling the carry bit of r3
         // the return address must be in r7
-        // r3, r4 and r5 are modified during the process (they must be saved and restored upon each call if needed)
 
-        // store 0b100... in r5, will be used as a MSb mask
+        // (here the shl op allows to drop conditional branching)
 
 double: addi 5, 0, -15 // | (shift constant to get the MSb)
         shl  5, 3, 5   // | store r3 Msb in r5
@@ -89,11 +88,10 @@ double: addi 5, 0, -15 // | (shift constant to get the MSb)
 
         // this function puts the rshift of r2 in r2, the carry bit is not handled
         // the return address must be in r7
-        // r5 is modified during the process (it must be saved and restored upon each call if needed)
 
 
 rshift: addi 5, 0, -1
-        shl  2, 2, 5
+        shl  2, 2, 5  // (shl is of great use here since it allows to drop the manual implementation of a barrel shifter)
         jalr 7, 7
 
 
@@ -101,9 +99,8 @@ rshift: addi 5, 0, -1
 // INC
         // this function adds r1 to r3 and adds the carry bit to r4
         // the return address must be in r7
-        // r3 and r4 are modified during the process (they must be saved and restored upon each call if needed)
 
-inc:    add 3, 3, 1, overfl
+inc:    add 3, 3, 1, overfl // (overflow handling is used here to simplify the 'add-and-carry' operation)
         jalr 7, 7
 overfl: addi 4, 4, 1
         jalr 7, 7

@@ -26,4 +26,4 @@ loop:   beq  2, 0, end       // | > WHILE r2 > 0
 overfl: addi 4, 4, 1         // |    > overfl : add carry bit to r4
 skip:   addi 2, 2, -1        // |    > skip:    --r2
         beq 0, 0, loop       // |
-end:    halt                 // |
+end:    halt                 // | (overflow handling is used here to simplify the 'add-and-carry' operation)

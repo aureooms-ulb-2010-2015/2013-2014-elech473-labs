@@ -37,19 +37,21 @@
 
 loop:   beq  5, 0, end          // | > hit end when all the masks have been applied
 
-        and  6, 7, 5            // | > check whether the ith bit of r7 is up 
+        and  6, 7, 5            // | > check whether the ith bit of r7 is up (and allows to drop nand-nand)
         beq  6, 0, skip         // | \ else skip
 
         add  4, 4, 2            // | > r4 can be incremented without worrying about carry bits
         add  3, 3, 1, overfl    // | > JUMP TO overfl IN CASE OF OVERFLOW
         beq  0, 0, skip         // | \ else skip
 
+        // | (overflow handling is used here to simplify the 'add-and-carry' operation)
+
 overfl: addi 4, 4, 1
 
 skip:   add  2, 2, 2    // | --
         addi 6, 0, -15  // | (shift constant to get the MSb)
         shl  6, 1, 6    // | > r2r1 *= 2
-        add  2, 2, 6    // |
+        add  2, 2, 6    // | (shl allows to drop branching operations)
         add  1, 1, 1    // | --
 
         add  5, 5, 5    // | > lshift the mask
