@@ -1,0 +1,101 @@
+elec h 473 lab 5
+
+mplab 8.92
+
+
+1) the dsPIC33 cpu. copy/paste pdf page 2 cpu rm 70204C... pdf 
+
+2) A microprocessor is an integrated chip with only a cpu, it doesn't have RAM, ROM or other peripheral. they are disigned for multipurpose use such as software develloping, games, document creation etc... 
+
+A microcontroler is designed to perform specific tasks. it's used for working on specific input where a relation with the output is known. The microcontroler has ROM, RAM, and other peripheral. It is used for specific applications like managing keyboard or mouse input.
+
+3)
+
+Addressing Mode Address Range
+File Register 0x0000-0x1FFF (see Note)
+Register Direct 0x0000-0x001F (working register array W0:W15)
+Register Indirect 0x0000-0xFFFF
+Immediate N/A (constant value)
+
+http://ww1.microchip.com/downloads/en/DeviceDoc/70157C.pdf
+page 36
+
+4)
+
+http://ww1.microchip.com/downloads/en/DeviceDoc/70157C.pdf
+page 37, 38
+
+5)
+http://ww1.microchip.com/downloads/en/DeviceDoc/70157C.pdf 
+page 26
+
+24 - bits instructions 
+84 instructions -> 7 bits
+16 registres -> 4 bits  * trois registres
+valeur litérale a la place d'un registre -> 5 bit
+
+yes
+
+6) 
+
+7) this header file contains every parameter needed to configure the chip. it defines every flag, port  of the environment the microcontroler has acces to.
+
+8) the volatile keyword is used at a variable declaration. it notifies the compiler that the variable is likely to see its value changed without any action taken by the code.
+
+
+9)
+ 
+
+ INTEGER DATA TYPES
+	Type 						  Bits 		Min 			Max
+char, signed char 					8 		-128 			127
+unsigned char 						8 		0 				255
+short, signed short 				16 		-32768 			32767
+unsigned short 						16 		0			 	65535
+int, signed int 					16 		-32768 			32767
+unsigned int 						16 		0 				65535
+long, signed long 					32 		-2^31 			2^31 - 1
+unsigned long 						32 		0 				2^32 - 1
+long long**, signed long long** 	64 		-2^63 			2^63 - 1
+unsigned long long** 				64 		0 				2^64 - 1
+
+FLOATING POINT DATA TYPES
+Type 			Bits 	E Min 		E Max 		N Min 		N Max
+float 			32 		-126 		127 		2^-126 		2^128
+double* 		32 		-126 		127 		2^-126 		2^128
+long double 	64 		-1022 		1023 		2^-1022 	2^1024
+
+
+POINTERS
+All MPLAB C30 pointers are 16-bits wide. This is sufficient for full data space access 
+(64 KB) and the small code model (32 Kwords of code.) In the large code model 
+(>32 Kwords of code), pointers may resolve to “handles”; that is, the pointer is the 
+address of a GOTO instruction which is located in the first 32 Kwords of program space
+
+
+10) signed
+
+11) it allows to change the processor without compilation errors
+
+12) here's your joke:
+
+A man flying in a hot air balloon suddenly realizes he’s lost. He reduces height and spots a man down below. He lowers the balloon further and shouts to get directions, "Excuse me, can you tell me where I am?"
+
+The man below says: "Yes. You're in a hot air balloon, hovering 30 feet above this field."
+
+"You must work in Information Technology," says the balloonist.
+
+"I do" replies the man. "How did you know?"
+
+"Well," says the balloonist, "everything you have told me is technically correct, but It's of no use to anyone."
+
+The man below replies, "You must work in management."
+
+"I do," replies the balloonist, "But how'd you know?"*
+
+"Well", says the man, "you don’t know where you are or where you’re going, but you expect me to be able to help. You’re in the same position you were before we met, but now it’s my fault." (lol)
+
+13)
+the value of the varables are first copied in register 0 (represented by adress 0x0000) then it's copied to the stack in the space allocated to the function where the variable is declared. [0x001c + offset] 0x001c is register w14 (it store the beginning of the address allocated )
+
+14) variables of size bigger than 16 bits are split into different register first then copied to memory from the registers using address stored in w14 and different offset.
