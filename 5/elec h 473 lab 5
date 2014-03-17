@@ -99,3 +99,50 @@ The man below replies, "You must work in management."
 the value of the varables are first copied in register 0 (represented by adress 0x0000) then it's copied to the stack in the space allocated to the function where the variable is declared. [0x001c + offset] 0x001c is register w14 (it store the beginning of the address allocated )
 
 14) variables of size bigger than 16 bits are split into different register first then copied to memory from the registers using address stored in w14 and different offset.
+
+15) joke
+
+16) There are glitches. Since it takes more than one instruction to initialize a variable, variables go through (unwanted) temporary states during their initialization.
+
+17) No.
+
+18)
+
+-> unused variables : justified but this is not the purpose of this question
+-> control reaches end of non-void function : justified but this is not the purpose of this question
+-> integer constant is to large : problem, the variables should be large enough to store the values we have in the code
+
+19) It's defined during compile time as a register variable.
+It's initialized during execution time and only one instruction is required since the address of a register does not have to be loaded.
+
+20) register INT8U *glob1 asm ("w8");
+
+21) literal values cannot be stored in the data types used in this program
+
+-> FP32   1.27E+50 becomes Infinity (overflow)
+-> FP64   8.76543E-70 becomes 0     (underflow)
+-> INT16S -35000   becomes 30536    (wrapping)
+-> INT16U 0x43210  becomes 12816    (wrapping)
+-> INT8U wraps
+-> INT8S wraps
+-> INT32U wraps
+
+
+22)same
+
+
+23) (here wrapping and overflow happens at execution time)
+
+when doing an assignation to a longer variable :
+
+	-> C type coercion automatically casts shorter type to longer types
+
+when doing an assignation to a shorter variable :
+
+	-> int variables wrap around : e.g. int8 = int16 % (2^8)
+	-> any casting is done after the complete evaluation of an expression
+
+when doing an assignation from integer to FP :
+
+	-> the closest matching representation for the integer in the IEEE format is chosen
+
