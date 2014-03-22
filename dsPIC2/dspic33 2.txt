@@ -1,0 +1,143 @@
+
+1)
+
+//INT8U = INT8U + INT8U
+
+something weird:
+move address of a in R2
+move value at address contained in R2 to R2   (why not just move a in R2?)
+
+move b to R0
+add a and b and put in 0
+
+move R0 to c
+
+
+
+
+//INT16U = INT8U + INT8U
+
+move a to R0
+zero extend R0 and put in R2 //extension to 16bits
+
+move b to R0
+zero extend R0 and put in R0 //extension to 16bits
+
+add R2 and R0 and put in R0
+
+move R0 to c
+
+//INT16U = INT16U + INT16U
+
+move both value to registers
+add registers and put in g
+
+//INT16U = INT16U - INT16U
+same with subtraction
+
+
+2)
+
+c = a + b ok
+g = a + b ok
+g = e + f ok
+g = e-f; //INT16U = INT16U - INT16U
+
+result is FF00 and will be considered as an unside value therefore it gives 
+6528 instead of  -256
+
+g = e+f; //INT16U = INT16U + INT16U
+	if(SRbits.C) g=0xFFFF;
+
+result is FFFF whish is incorrect but it's the programmer's choice to handle the overflow
+
+
+----------signed additions-----------
+s3 = s1 + s2; //INT8S = INT8S + INT8S
+
+the expected result is 136 but it's interpreted as a negative number so the result is -120.
+bits 2 and 0 of LSByte of Status are set to one as the result is negative and an overflow hapenned,
+s3 is set to 127
+
+s3 = s1 + s2; //INT8S = INT8S + INT8S
+
+same as previously but here the overflow goes the other way around so the value is set to -128
+
+
+--------multiplications-------------
+c = a*b; 	//INT8U = INT8U * INT8U
+
+overflow result is 0.
+
+g = e*f; //INT16U = INT16U * INT16U ok
+
+g = e*f; //INT16U = INT16U * INT16U
+
+overflow 12000*80 doesn't fit on 16b
+
+h = e*f; //INT32U = INT16U * INT16U
+
+has the same result as previous instruction. Due to the fact the registers are 16 bits long. The oprerands
+should have been casted to 32bits.
+
+h = (INT32U)e*(INT32U)f; //typecast before multiplying
+ correct way to do it
+
+j = h*i; //INT64U = INT32U * INT32U
+overflowing
+
+j = (INT64U)h*(INT64U)i;	//typecast before multiplying  ok
+
+if(SRbits.C) g=0xFFFF // means if last operation produced an overflow set ge to FFFF
+
+
+3)
+a cast add instructions and make the execution slower
+
+
+4)
+the result is correct (discarding overflows) only when mul is done before div
+
+5)
+the reason of the differences is the way the operation is written in c.
+
+we have to apply * before / because a / can cause a 0
+
+6)
+f=(a/c)*b;	//1B8 0.500000 탎
+f=a*(b/c);	//192 0.500000 탎
+are the longest operations
+
+7)
+
+------------method one-----------
+6.550000 탎
+c = 39
+253 cycles
+
+------------method two-----------
+0.216667 탎
+c = 38
+13 cycles
+
+------------method three-----------
+0.333333 탎
+c = 39
+20 cycles
+
+8)
+if 8 lower bits >= 128 adding 128 put a carry bit to the next byte and the result is rounded tu upper value
+else result is rounded to lower value.
+
+9)
+the result of the second method is always rouneded to the lowest value it's less precise than the third method
+
+10)
+either we multiply by 2^4 and 2^6 (risking an overflow) and after we divide by 2^10
+or
+we multiply by 2^2 and 2^4 and divide by 2^6
+
+11)
+the variables are stored at address stored at address 1C+9 1C beein the Stack pointer
+
+12)

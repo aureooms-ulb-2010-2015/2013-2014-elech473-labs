@@ -1,0 +1,265 @@
+\documentclass[10pt]{article}
+\usepackage{fullpage}
+\usepackage{fontspec}
+\usepackage{xunicode}
+\usepackage{xltxtra}
+\usepackage{hyperref}
+\usepackage{parskip}
+\usepackage{caption}
+\usepackage[english]{babel}
+
+\title{ELEC-H-473 : dsPIC33 Lab 1 : QA}
+\author{CHASTE Gauvain  \\
+	Computer Science Student \\
+	\and 
+	OOMS Aurélien \\
+	Computer Science Student \\
+}
+
+\date{\today}
+
+
+\begin{document}
+
+\maketitle
+
+\paragraph{Question 1}
+\url{http://ww1.microchip.com/downloads/en/DeviceDoc/70204C.pdf} p. 2
+
+The dsPIC33F/PIC24H CPU has a 16-bit (data) modified Harvard architecture with an 
+enhanced instruction set, including significant support for digital signal processing. The CPU 
+has a 24-bit instruction word, with a variable length opcode field. The Program Counter (PC) is 
+24 bits wide and addresses up to 4M x 24 bits of user program memory space.
+
+A single-cycle instruction prefetch mechanism helps maintain throughput and provides 
+predictable execution. All instructions execute in a single cycle, except the instructions that 
+change the program flow, double-word move (MOV.D) instruction, table instructions and also 
+instructions accessing Program Space Visibility (PSV) take more than one cycle. Overhead-free 
+program loop constructs are supported using the DO and REPEAT instructions, both of which are 
+interruptible at any point.
+
+
+\paragraph{Question 2}
+
+Microcontrollers are designed for embedded applications, in contrast to the microprocessors used in personal computers or other general purpose applications.
+
+A microprocessor is an integrated chip with only a cpu, it doesn't have RAM, ROM or other peripheral. they are disigned for multipurpose use such as software develloping, games, document creation, etc.
+
+A microcontroller is designed to perform specific tasks. it's used for working on specific input where a relation with the output is known. The microcontroler has ROM, RAM, and other peripheral. It is used for specific applications like managing keyboard or mouse input.
+
+
+\paragraph{Question 3}
+
+\url{http://ww1.microchip.com/downloads/en/DeviceDoc/70157C.pdf} p. 36
+
+
+\begin{tabular}{|l|l|}
+\hline
+{\bfseries Addressing Mode} & {\bfseries Address Range} \\
+\hline\hline
+File Register & 0x0000-0x1FFF (see Note)\\
+\hline
+Register Direct & 0x0000-0x001F (working register array W0:W15)\\
+\hline
+Register Indirect & 0x0000-0xFFFF \\
+\hline
+Immediate N/A & (constant value) \\
+\hline
+\end{tabular}
+
+{\bfseries Note}: The address range for the File Register MOV is 0x0000-0xFFFE
+	
+\paragraph{Question 4}
+
+\url{http://ww1.microchip.com/downloads/en/DeviceDoc/70157C.pdf} pp. 37-44
+
+File register addressing is used by instructions which use a predetermined data address as an
+operand for the instruction. (e.g. the DEC instruction)
+
+Register direct addressing is used to access the contents of the 16 working registers (W0:W15). (e.g the SL instruction)
+
+Register indirect addressing is used to access any location in data memory by treating the
+contents of a working register as an Effective Address (EA) to data memory. (e.g. the ADD instruction)
+
+In immediate addressing, the instruction encoding contains a predefined constant operand,
+which is used by the instruction. (e.g. the XOR instruction)
+
+An example of instruction using multiple addressing modes is the ADD instruction.
+
+
+\paragraph{Question 5}
+
+\url{http://ww1.microchip.com/downloads/en/DeviceDoc/70157C.pdf} p. 26
+
+\begin{itemize}
+\item 24 - bits instructions
+\item 84 instructions -> 7 bits
+\item 16 registers -> 4 bits  * 3 registers for register direct and indirect addressing
+\item use of immediate addressing mode -> 4 + 5 bits
+\end{itemize}
+
+\emph{seems usable / coherent}
+
+
+\paragraph{Question 6}
+
+Since addresses and immediate values are both 16 bits wide they eat the 24 bits of an instruction quickly.
+This cause instruction length problems in case of file register and immediate addressing.
+
+
+\paragraph{Question 7}
+
+This header file contains every parameter needed to configure the chip. It defines every flag, ports and latches of the environment the microcontroller has access to.
+
+
+\paragraph{Question 8}
+
+The volatile keyword is used at a variable declaration. It notifies the compiler that the variable is likely to see its value changed without any action taken by the code.
+
+
+\paragraph{Question 9}\vspace{0.2cm}
+\begin{center}
+\captionof{table}{INTEGER DATA TYPES}
+\begin{tabular}{|l|l|l|l|}
+\hline
+{\bfseries Type} & {\bfseries Bits} & {\bfseries Min} & {\bfseries Max} \\
+\hline\hline
+char, signed char 			&		8 	&	-128 		&	127\\\hline
+unsigned char 				&		8 	&	0 			&	255\\\hline
+short, signed short 		&		16 	&	-32768 		&	32767\\\hline
+unsigned short 				&		16 	&	0			& 	65535\\\hline
+int, signed int 			&		16 	&	-32768 		&	32767\\\hline
+unsigned int 				&		16 	&	0 			&	65535\\\hline
+long, signed long 			&		32 	&	$-2^{31}$	&	$2^{31} - 1$\\\hline
+unsigned long 				&		32 	&	0 			&	$2^{32} - 1$\\\hline
+long long**, signed long long** &	64 	&	$-2^{63}$ 	&	$2^{63} - 1$\\\hline
+unsigned long long** 			&	64 	&	0 			&	$2^{64} - 1$\\\hline
+\end{tabular}
+
+\captionof{table}{FLOATING POINT DATA TYPES}
+\begin{tabular}{|l|l|l|l|l|l|}
+\hline
+{\bfseries Type} 		&	{\bfseries Bits} &	{\bfseries E Min} 	&	{\bfseries E Max} 	&	{\bfseries N Min} 	&	{\bfseries N Max}\\\hline\hline
+float 		&	32 	&	-126 	&	127 	&	$2^{-126}$	&$2^{128}$\\\hline
+double* 	&	32 	&	-126 	&	127 	&	$2^{-126}$ 	&$2^{128}$\\\hline
+long double &	64 	&	-1022 	&	1023 	&	$2^{-1022}$	&$2^{1024}$\\\hline
+\end{tabular}
+\end{center}
+
+{\bfseries POINTERS}
+All MPLAB C30 pointers are 16-bits wide. This is sufficient for full data space access 
+(64 KB) and the small code model (32 Kwords of code.) In the large code model 
+(>32 Kwords of code), pointers may resolve to \emph{handles}; that is, the pointer is the 
+address of a GOTO instruction which is located in the first 32 Kwords of program space.
+
+
+\paragraph{Question 10}
+
+\emph{signed}.
+
+
+\paragraph{Question 11}
+
+It allows better flexibility when porting the code to another processor as well as better readability (sizes are explicit).
+
+
+\paragraph{Question 12}
+
+When Shakespeare asked, To be, or not to be?, he did not provide the answer. But programming can. Well the answer is FF.
+
+2B |\textasciitilde 2B = FF
+
+
+\paragraph{Question 13}
+
+The value of a variable is first copied in register 0 (represented by adress 0x0000) then it's copied to the stack in the space allocated to the function where the variable is declared. [0x001c + offset] 0x001c is register w14 (which stores the first address in the scope of the function).
+
+
+\paragraph{Question 14}
+
+Variables of size bigger than 16 bits are split into different register first then copied to memory from the registers using address stored in w14 and different offsets.
+
+
+\paragraph{Question 15}
+
+Two threads walk into a bar. The barkeeper looks up and yells, "hey, I want don't any conditions race like time last!"
+
+
+\paragraph{Question 16}
+
+There are glitches. Since it takes more than one instruction to initialize a variable, variables go through (unwanted) temporary states during their initialization.
+
+
+\paragraph{Question 17}
+
+No.
+
+
+\paragraph{Question 18}
+
+\begin{itemize}
+\item unused variables : justified but this is not the purpose of this question
+\item control reaches end of non-void function : justified but this is not the purpose of this question
+\item integer constant is to large : problem, the variables should be large enough to store the values we have in the code
+\end{itemize}
+
+
+\paragraph{Question 19}
+
+It's defined during compile time as a register variable.
+It's initialized during execution time and only one instruction is required since the address of a register does not have to be loaded.
+
+
+\paragraph{Question 20}
+
+\verb!register INT8U *glob1 asm ("w8");!
+
+\emph{"w8" is the destination register}
+
+
+\paragraph{Question 21}
+
+literal values cannot be stored in the data types used in this program
+
+\begin{itemize}
+\item{FP32} 1.27E+50 becomes Infinity (overflow)
+\item{FP64} 8.76543E-70 becomes 0 (underflow)
+\item{INT16S} -35000 becomes 30536 (wrapping)
+\item{INT16U} 0x43210 becomes 12816 (wrapping)
+\item{INT8U} wraps
+\item{INT8S} wraps
+\item{INT32U} wraps
+\end{itemize}
+
+
+\paragraph{Question 22}
+
+In \verb!variable.c! we were only using literal values. Here we have to load the data from the source,
+the store it in the destination.
+
+
+\paragraph{Question 23}
+
+(here wrapping and overflow happens at execution time)
+
+when doing an assignation to a wider variable :
+
+\begin{itemize}
+	\item C type coercion automatically extends shorter type to wider types
+\end{itemize}
+
+when doing an assignation to a shorter variable :
+
+\begin{itemize}
+	\item int variables wrap around : e.g. int8 = int16 \% ($2^8$)
+	\item any casting is done after the complete evaluation of an expression
+\end{itemize}
+
+when doing an assignation from integer to FP :
+
+\begin{itemize}
+	\item the closest matching representation for the integer in the IEEE format is chosen
+\end{itemize}
+
+
+\end{document}
