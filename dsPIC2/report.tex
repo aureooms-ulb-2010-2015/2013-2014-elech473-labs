@@ -6,6 +6,7 @@
 \usepackage{hyperref}
 \usepackage{parskip}
 \usepackage{caption}
+\usepackage{multicol}
 \usepackage[english]{babel}
 
 \title{ELEC-H-473 : dsPIC33 Lab 2 : QA}
@@ -23,13 +24,199 @@
 
 \maketitle
 
+
 \paragraph{Question 1}
+\begin{multicols}{2}
+\begin{itemize}
+\item \verb!INT8U = INT8U + INT8U!
+	\begin{enumerate}
+	\item move address of \verb!a! in \verb!0x0002!
+	\item move value at address contained in \verb!0x0002! to \verb!0x0002! (why not just move a in \verb!0x0002!?)
+	\item move \verb!b! to \verb!0x0000!
+	\item add \verb!0x0002! and \verb!0x0000! and put in \verb!0x0000!
+	\item move \verb!0x0000! to \verb!c!
+	\end{enumerate}
+
+\item \verb!INT16U = INT8U + INT8U!
+	\begin{enumerate}
+	\item move \verb!a! to \verb!0x0000!
+	\item zero extend \verb!0x0000! and put in \verb!0x0002! \verb!// extension to 16bits!
+	\item move \verb!b! to \verb!0x0000!
+	\item zero extend \verb!0x0000! and put in \verb!0x0000! \verb!//extension to 16bits!
+	\item add \verb!0x0002! and \verb!0x0000! and put in \verb!0x0000!
+	\item move \verb!0x0000! to \verb!c!
+	\end{enumerate}
+
+\item \verb!INT16U = INT16U + INT16U!
+	\begin{enumerate}
+	\item move both value to registers
+	\item add registers and put in \verb!g!
+	\end{enumerate}
+
+\item \verb!INT16U = INT16U - INT16U!
+	\begin{enumerate}
+	\item \verb!// same as previous with subtraction!
+	\end{enumerate}
+
+\end{itemize}
+\end{multicols}
 
 \paragraph{Question 2}
+\begin{itemize}
+\item unsigned additions
+	\begin{itemize}
+	\item \verb!c = a + b; // OK!
+	\item \verb!g = a + b; // OK!
+	\item \verb!g = e + f; // OK!
+	\item \verb!g = e - f; // INT16U = INT16U - INT16U!
 
-\paragraph{Question $\dots$}
+	Result is \verb!0xff00! and will be considered as an unsigned value therefore it gives $6528$ instead of $-256$.
 
-\paragraph{Question $n$}
+	\item \verb!g = e + f; //INT16U = INT16U + INT16U!
+
+	\verb!if(SRbits.C) g = 0xffff;!
+
+	Result is \verb!0xffff! which is the way the programmer decided to handle the overflow.
+
+	\end{itemize}
+
+\item signed additions
+	\begin{itemize}
+	\item \verb!s3 = s1 + s2; //INT8S = INT8S + INT8S!
+
+	The expected result is $136$ but it's interpreted as a negative number so the result is $-120$. Bits $2$ and $0$ of LSByte of Status are set to $1$ as the result is negative and an overflow hapenned, \verb!s3! is set to $127$.
+
+	\item \verb!s3 = s1 + s2; //INT8S = INT8S + INT8S!
+
+	Same as previously but here the overflow goes the other way around so the value is set to $-128$.
+	\end{itemize}
+
+
+\item multiplications
+	\begin{itemize}
+	\item \verb!c = a * b; //INT8U = INT8U * INT8U!
+
+	Overflow, result is $0$.
+
+	\item \verb!g = a * b; //INT16U = INT16U * INT16U. OK!
+
+	\item \verb!g = e * f; //INT16U = INT16U * INT16U!
+
+	Overflow, \verb!12000 * 80! doesn't fit on $16$ bits.
+
+	\item \verb!h = e * f; //INT32U = INT16U * INT16U!
+
+	Has the same result as previous instruction. Due to the fact the registers are $16$ bits long. The operands should have been casted to \verb!INT32U!.
+
+	\item \verb!h = (INT32U)e * (INT32U)f; // typecast before multiplying!
+
+	Correct way to do it.
+
+	\item \verb!j = h * i; // INT64U = INT32U * INT32U!
+
+	Overflowing.
+
+	\item \verb!j = (INT64U)h * (INT64U)i; // typecast before multiplying. OK!
+
+	\verb!if(SRbits.C) g = 0xffff; // means if last operation produced a carry, set g to 0xffff!
+
+	\end{itemize}
+\end{itemize}
+
+\paragraph{Question 3}
+A cast adds instructions and makes the execution slower.
+
+\paragraph{Question 4}
+The result is correct (discarding overflows) only when \verb!mul! is done before \verb!div!.
+
+\paragraph{Question 5}
+The reason of the differences is in the way the operation precedence is handled in \verb!C!.
+We have to apply \verb!*! before \verb!/! because a \verb!/! will cause more harm on smaller values (e.g. can cause a $0$ to appear).
+
+\paragraph{Question 6}
+\begin{itemize}
+\item \verb!f = (a / c) * b;! : \verb!0x01b8! 0.500000 µs
+\item \verb!f = a * (b / c);! : \verb!0x0192! 0.500000 µs
+\end{itemize}
+are the longest operations
+
+\paragraph{Question 7}
+\begin{multicols}{3}
+\begin{enumerate}
+\item
+	\begin{itemize}
+	\item 6.550000 µs
+	\item c = 39
+	\item 253 cycles
+	\end{itemize}
+
+\item
+	\begin{itemize}
+	\item 0.216667 µs
+	\item c = 38
+	\item 13 cycles
+	\end{itemize}
+
+\item
+	\begin{itemize}
+	\item 0.333333 µs
+	\item c = 39
+	\item 20 cycles
+	\end{itemize}
+\end{enumerate}
+\end{multicols}
+
+\paragraph{Question 8}
+\begin{itemize}
+\item If $8$ lower bits $\geq 128$ adding $128$ put a carry bit to the next byte and the result is rounded to upper value.
+\item Else result is rounded to lower value.
+\end{itemize}
+
+\paragraph{Question 9}
+The result of the second method is always rounded to the lowest value. It's less precise than the third method.
+
+\paragraph{Question 10}
+\begin{itemize}
+\item Either we multiply by $2^4$ and $2^6$ (risking an overflow) and after we divide by $2^10$
+\item Or we multiply by $2^2$ and $2^4$ and divide by $2^6$
+\end{itemize}
+
+\paragraph{Question 11}
+The variables are stored at address stored at address \verb!0x01c+9!, \verb!0x001c! beein the stack pointer.
+
+\paragraph{Question 12}
+The variables are stored in registers \verb!0x0004! for \verb!c!, \verb!0x0002! for \verb!b! and \verb!0x0000! for \verb!a!.
+
+\paragraph{Question 13}
+Local a is put on the stack at address \verb!0x001c!.
+
+\paragraph{Question 14}
+The variables are stored back on the stack at addresses \verb!0x001c+2! for \verb!a!, \verb!0x001c+3! for \verb!b! and \verb!0x001c+4! for \verb!c!.
+
+\paragraph{Question 15}
+The return value is put in register \verb!0x0000! in both \verb!Add3! and \verb!Mul2!.
+
+\paragraph{Question 16}
+The address of the beginning of the table is put in regsiter \verb!0x0004!.
+
+\paragraph{Question 17}
+In order to use the array the address of the beginning of the array is put in register \verb!0x0000!. When needed, the value is incremented by two times the index of the desired value which is then put in register \verb!0x0000!.
+
+\paragraph{Question 18}
+\begin{itemize}
+\item \verb!&a! returns the address of lvalue \verb!a!
+\item \verb!*i! returns the lvalue at virtual address \verb!i!
+\end{itemize}
+
+\paragraph{Question 19}
+In order to swap the values stored at address \verb!i! and address \verb!j!, the value of \verb!*i! is stored in a temporary variable, \verb!*j! is then assigned to \verb!*i! and finally the temporary variable is assigned to \verb!*i!.
+
+\paragraph{Question 20}
+In PSV mixed mode we can find \verb!nop! instructions where the strings should be.
+
+\paragraph{Question 21}
+The \verb!sub! instruction cannot directly handle $8$ bits operands thus in the first case the operand must be stored on a register. While in the second case the \verb!subr! instruction cannot handle $2$ \verb!mem! + $1$ \verb!imm! and must thus store the immediate in a register.
+
 
 
 \end{document}
